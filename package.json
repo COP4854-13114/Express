@@ -1,0 +1,16 @@
+{
+  "name": "lecture10",
+  "version": "1.0.0",
+  "main": "./dist/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jose C Gomez",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.4",
+    "express": "^4.21.2"
+  }
+}

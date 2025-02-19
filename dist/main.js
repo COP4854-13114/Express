@@ -1,0 +1,69 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const sitecounter_1 = require("./sitecounter");
+const app = (0, express_1.default)();
+let siteCounters = [];
+/*app.use('/', (req,res,next)=>{
+    let totalData='';
+    req.on('data', (data)=>{
+        totalData+=data.ToString()
+    });
+    req.on('end', ()=>{
+        req.body=totalData;
+        next();
+    });
+});*/ //Manual Way of Reading Body Data or Content
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
+app.use('/', (req, res, next) => {
+    if (siteCounters.length >= 0) {
+        let found = false;
+        for (let x of siteCounters) {
+            if (x.Url === req.url) {
+                x.IncrementCount();
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            let currentCounter = new sitecounter_1.SiteCounter();
+            currentCounter.IncrementCount();
+            currentCounter.Url = req.url;
+            currentCounter.Method = req.method;
+            siteCounters.push(currentCounter);
+        }
+    }
+    else {
+        let currentCounter = new sitecounter_1.SiteCounter();
+        currentCounter.IncrementCount();
+        currentCounter.Url = req.url;
+        currentCounter.Method = req.method;
+        siteCounters.push(currentCounter);
+    }
+    console.log(siteCounters);
+    next();
+});
+app.use(express_1.default.static('public'));
+app.get('/counter', (req, res) => {
+    res.status(200).json(siteCounters);
+});
+app.use('/', (req, res, next) => {
+    console.log(`Body: ${JSON.stringify(req.body)}`);
+    if (req.url === '/Horse') {
+        res.status(403);
+        next(new Error('No horseing around'));
+    }
+    else
+        res.send(`Hello World: ${req.body.Name}`);
+});
+app.use((err, req, res, next) => {
+    res.json({
+        status: res.statusCode,
+        message: err.message
+    });
+});
+app.listen(3000);
