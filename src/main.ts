@@ -1,7 +1,26 @@
 import express, {Request,Response,ErrorRequestHandler,NextFunction} from 'express';
 import { SiteCounter } from './sitecounter';
-
+import { AppError } from './models/AppError.model';
+import { BlogPost } from './models/post.model';
+import { BlogCategory } from './models/category.model';
+import categoryRouter from './routers/category.router';
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+app.use('/Categories',categoryRouter);
+
+let blogPosts:BlogPost[]=[];
+
+
+
+
+
+
+
+
+
+
+
 
 let siteCounters:SiteCounter[]=[];
 
@@ -15,8 +34,7 @@ let siteCounters:SiteCounter[]=[];
         next();
     });
 });*/ //Manual Way of Reading Body Data or Content
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+
 
 app.use('/',(req,res,next)=>{
     
@@ -45,6 +63,7 @@ app.use('/',(req,res,next)=>{
     else
     {
         let currentCounter= new SiteCounter();
+        
         currentCounter.IncrementCount();
         currentCounter.Url=req.url;
         currentCounter.Method=req.method as 'GET'|'PUT'|'PATCH'|'POST'|'DELETE';
@@ -65,19 +84,19 @@ app.use('/', (req,res,next)=>{
     console.log(`Body: ${JSON.stringify(req.body)}`);
     if(req.url==='/Horse')
     {
-        res.status(403);
+        //res.status(403);
         
-        next(new Error('No horseing around'));
+        next(new AppError('No horseing around',403));
     }
     else
         res.send(`Hello World: ${req.body.Name}`);
     
 });
 
-app.use((err:Error,req:Request,res:Response,next:NextFunction)=>{
+app.use((err:AppError,req:Request,res:Response,next:NextFunction)=>{
     
-    res.json({
-        status: res.statusCode,
+    res.status(err.statusCode).json({
+        status: err.statusCode,
         message: err.message
     })
 });

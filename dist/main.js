@@ -5,7 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const sitecounter_1 = require("./sitecounter");
+const AppError_model_1 = require("./models/AppError.model");
+const category_router_1 = __importDefault(require("./routers/category.router"));
 const app = (0, express_1.default)();
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
+app.use('/Categories', category_router_1.default);
+let blogPosts = [];
 let siteCounters = [];
 /*app.use('/', (req,res,next)=>{
     let totalData='';
@@ -17,8 +23,6 @@ let siteCounters = [];
         next();
     });
 });*/ //Manual Way of Reading Body Data or Content
-app.use(express_1.default.json());
-app.use(express_1.default.urlencoded({ extended: true }));
 app.use('/', (req, res, next) => {
     if (siteCounters.length >= 0) {
         let found = false;
@@ -54,15 +58,15 @@ app.get('/counter', (req, res) => {
 app.use('/', (req, res, next) => {
     console.log(`Body: ${JSON.stringify(req.body)}`);
     if (req.url === '/Horse') {
-        res.status(403);
-        next(new Error('No horseing around'));
+        //res.status(403);
+        next(new AppError_model_1.AppError('No horseing around', 403));
     }
     else
         res.send(`Hello World: ${req.body.Name}`);
 });
 app.use((err, req, res, next) => {
-    res.json({
-        status: res.statusCode,
+    res.status(err.statusCode).json({
+        status: err.statusCode,
         message: err.message
     });
 });
