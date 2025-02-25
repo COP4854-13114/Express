@@ -7,10 +7,18 @@ const express_1 = __importDefault(require("express"));
 const sitecounter_1 = require("./sitecounter");
 const AppError_model_1 = require("./models/AppError.model");
 const category_router_1 = __importDefault(require("./routers/category.router"));
+const posts_router_1 = __importDefault(require("./routers/posts.router"));
+const express_handlebars_1 = require("express-handlebars");
 const app = (0, express_1.default)();
+//app.set('view engine','pug'); //use pug
+//app.set('view engine','ejs'); //use ejs
+app.engine('hbs', (0, express_handlebars_1.engine)()); //Register handlebars cause its special
+app.set('view engine', 'hbs');
+app.set('views', 'views');
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use('/Categories', category_router_1.default);
+app.use('/Posts', posts_router_1.default);
 let blogPosts = [];
 let siteCounters = [];
 /*app.use('/', (req,res,next)=>{

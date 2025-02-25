@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <title>Welcome to EJS</title>
+    </head>
+    <body>
+        <h1 style="color: red;">Welcome to my EJS Blog</h1>
+        <hr/>
+        <h2>My Blog Posts below!</h2>
+        <% postArray.forEach(p=>{ %>
+            <h2><%= p.title %></h2>
+            <p><%= p.content %></p>
+            <% }); %>
+    </body>
+</html>

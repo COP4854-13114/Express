@@ -4,10 +4,22 @@ import { AppError } from './models/AppError.model';
 import { BlogPost } from './models/post.model';
 import { BlogCategory } from './models/category.model';
 import categoryRouter from './routers/category.router';
+import postRouter from './routers/posts.router'
+import  {engine} from 'express-handlebars';
+
 const app = express();
+
+//app.set('view engine','pug'); //use pug
+//app.set('view engine','ejs'); //use ejs
+
+app.engine('hbs', engine()); //Register handlebars cause its special
+app.set('view engine','hbs');
+app.set('views','views');
+
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use('/Categories',categoryRouter);
+app.use('/Posts',postRouter);
 
 let blogPosts:BlogPost[]=[];
 
