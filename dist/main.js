@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const sitecounter_1 = require("./sitecounter");
 const AppError_model_1 = require("./models/AppError.model");
 const category_router_1 = __importDefault(require("./routers/category.router"));
+const user_router_1 = __importDefault(require("./routers/user.router"));
 const posts_router_1 = __importDefault(require("./routers/posts.router"));
 const express_handlebars_1 = require("express-handlebars");
 const app = (0, express_1.default)();
@@ -19,6 +20,7 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use('/Categories', category_router_1.default);
 app.use('/Posts', posts_router_1.default);
+app.use('/Users', user_router_1.default);
 let blogPosts = [];
 let siteCounters = [];
 /*app.use('/', (req,res,next)=>{

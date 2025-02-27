@@ -4,6 +4,7 @@ import { AppError } from './models/AppError.model';
 import { BlogPost } from './models/post.model';
 import { BlogCategory } from './models/category.model';
 import categoryRouter from './routers/category.router';
+import userRouter from './routers/user.router';
 import postRouter from './routers/posts.router'
 import  {engine} from 'express-handlebars';
 
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use('/Categories',categoryRouter);
 app.use('/Posts',postRouter);
+app.use('/Users',userRouter);
 
 let blogPosts:BlogPost[]=[];
 
