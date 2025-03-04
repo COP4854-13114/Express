@@ -10,7 +10,25 @@ const category_router_1 = __importDefault(require("./routers/category.router"));
 const user_router_1 = __importDefault(require("./routers/user.router"));
 const posts_router_1 = __importDefault(require("./routers/posts.router"));
 const express_handlebars_1 = require("express-handlebars");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+let SECRET_KEY = 'MY SECRET KEY SHHHHHHH';
+const AuthMiddleWare = ((req, res, next) => {
+    const token = req.headers.authorization.split(' ')[1];
+    if (!token) {
+        next(new AppError_model_1.AppError('You are not logged in', 401));
+    }
+    jsonwebtoken_1.default.verify(token, SECRET_KEY, (err, decoded) => {
+        if (err) {
+            next(new AppError_model_1.AppError('You are not logged in', 401));
+        }
+        req.user = decoded;
+        next();
+    });
+});
 const app = (0, express_1.default)();
+app.get('/horse', AuthMiddleWare, (req, res, next) => {
+    res.send('Horse');
+});
 //app.set('view engine','pug'); //use pug
 //app.set('view engine','ejs'); //use ejs
 app.engine('hbs', (0, express_handlebars_1.engine)()); //Register handlebars cause its special
