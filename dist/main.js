@@ -10,23 +10,10 @@ const category_router_1 = __importDefault(require("./routers/category.router"));
 const user_router_1 = __importDefault(require("./routers/user.router"));
 const posts_router_1 = __importDefault(require("./routers/posts.router"));
 const express_handlebars_1 = require("express-handlebars");
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-let SECRET_KEY = 'MY SECRET KEY SHHHHHHH';
-const AuthMiddleWare = ((req, res, next) => {
-    const token = req.headers.authorization.split(' ')[1];
-    if (!token) {
-        next(new AppError_model_1.AppError('You are not logged in', 401));
-    }
-    jsonwebtoken_1.default.verify(token, SECRET_KEY, (err, decoded) => {
-        if (err) {
-            next(new AppError_model_1.AppError('You are not logged in', 401));
-        }
-        req.user = decoded;
-        next();
-    });
-});
+const auth_guard_1 = require("./guards/auth.guard");
 const app = (0, express_1.default)();
-app.get('/horse', AuthMiddleWare, (req, res, next) => {
+app.get('/horse', auth_guard_1.AuthMiddleWare, (req, res, next) => {
+    console.log(req.headers['current_user']);
     res.send('Horse');
 });
 //app.set('view engine','pug'); //use pug

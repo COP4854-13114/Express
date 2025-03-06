@@ -1,15 +1,19 @@
 import express from 'express';
 import { BlogPost } from '../models/post.model';
 import { AppError } from '../models/AppError.model';
+import { AuthMiddleWare } from '../guards/auth.guard';
 
 const router = express.Router();
 
 let posts: BlogPost[] =[];
 
-router.post('/', (req,res,next)=>{
+router.post('/', AuthMiddleWare, (req,res,next)=>{
     if(req.body.title && req.body.content)
     {
         let post = new BlogPost(req.body.title, req.body.content);
+        console.log(req.headers['current_user']);
+        //post.postedBy = (JSON.parse(req.headers['current_user'] as string)  as {userId:string}).userId;
+        post.postedBy = (req.headers['current_user'] as unknown as {userId:string}).userId;
         posts.push(post);
         console.log(posts);
         res.status(201).json(post);

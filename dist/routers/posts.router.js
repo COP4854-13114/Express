@@ -6,11 +6,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const post_model_1 = require("../models/post.model");
 const AppError_model_1 = require("../models/AppError.model");
+const auth_guard_1 = require("../guards/auth.guard");
 const router = express_1.default.Router();
 let posts = [];
-router.post('/', (req, res, next) => {
+router.post('/', auth_guard_1.AuthMiddleWare, (req, res, next) => {
     if (req.body.title && req.body.content) {
         let post = new post_model_1.BlogPost(req.body.title, req.body.content);
+        console.log(req.headers['current_user']);
+        //post.postedBy = (JSON.parse(req.headers['current_user'] as string)  as {userId:string}).userId;
+        post.postedBy = req.headers['current_user'].userId;
         posts.push(post);
         console.log(posts);
         res.status(201).json(post);

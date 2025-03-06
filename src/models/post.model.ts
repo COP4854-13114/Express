@@ -3,6 +3,7 @@ import { BlogCategory } from "./category.model";
 export class BlogPost 
 {
     title:string='';
+    postedBy:string='';
     content:string='';
     postedDate:Date = new Date();
     category: BlogCategory|undefined=undefined;

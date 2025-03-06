@@ -3,12 +3,13 @@ import { BlogUser } from '../models/user.model';
 import { AppError } from '../models/AppError.model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
+import { PrismaClient } from '@prisma/client';
 const userRouter = express.Router();
 let arrayUsers: BlogUser[]=[];
 let SECRET_KEY='MY SECRET KEY SHHHHHHH';
+const prismaC = new PrismaClient();
 
-userRouter.post('/',(req,res,next)=>{
+userRouter.post('/',async (req,res,next)=>{
 
     console.log(req.body);
     bcrypt.hash(req.body.password,10,(err,hash)=>{
@@ -18,11 +19,18 @@ userRouter.post('/',(req,res,next)=>{
         {
             next(new AppError('Error in hashing password',500));
         }
-        const user= new BlogUser(req.body.username, hash);
-        arrayUsers.push(user);
+        /*const user= new BlogUser(req.body.username, hash);
+        arrayUsers.push(user);*/
+
+        const newUser = await prismaC.blogUser.create({
+            data:{
+                username: req.body.username,
+                password: hash
+            }
+        });
 
         console.log(arrayUsers);
-        res.status(201).json(user);
+        res.status(201).json(newUser);
     });
     
     

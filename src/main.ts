@@ -7,32 +7,13 @@ import categoryRouter from './routers/category.router';
 import userRouter from './routers/user.router';
 import postRouter from './routers/posts.router'
 import  {engine} from 'express-handlebars';
-import jwt from 'jsonwebtoken';
-
-let SECRET_KEY='MY SECRET KEY SHHHHHHH';
-
-const AuthMiddleWare = ((req:any,res:any,next:any)=>{
-    const token = req.headers.authorization.split(' ')[1];
-    if(!token)
-    {
-        next(new AppError('You are not logged in',401));
-    }
-    jwt.verify(token,SECRET_KEY,(err:any,decoded:any)=>{
-        if(err)
-        {
-            next(new AppError('You are not logged in', 401));
-        }
-        req.user = decoded;
-        next();
-    })
-
-    
-});
+import { AuthMiddleWare } from './guards/auth.guard';
 
 
 const app = express();
 
 app.get('/horse', AuthMiddleWare, (req,res,next)=>{
+    console.log(req.headers['current_user']);
     res.send('Horse');
 });
 //app.set('view engine','pug'); //use pug
