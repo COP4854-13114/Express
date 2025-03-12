@@ -11,16 +11,26 @@ const prismaC = new PrismaClient();
 
 userRouter.post('/',async (req,res,next)=>{
 
-    console.log(req.body);
-    bcrypt.hash(req.body.password,10,(err,hash)=>{
+    const hash = await bcrypt.hash(req.body.password,10);
+    
+    const newUser = await prismaC.blogUser.create({
+        data:{
+            username: req.body.username,
+            password: hash
+        }
+    });
+    
+    res.status(201).json(newUser);
+    
+    /*
+    bcrypt.hash(req.body.password,10,async (err,hash)=>{
         console.log(hash);
         console.log(err);
         if(err)
         {
             next(new AppError('Error in hashing password',500));
         }
-        /*const user= new BlogUser(req.body.username, hash);
-        arrayUsers.push(user);*/
+        
 
         const newUser = await prismaC.blogUser.create({
             data:{
@@ -28,15 +38,41 @@ userRouter.post('/',async (req,res,next)=>{
                 password: hash
             }
         });
-
-        console.log(arrayUsers);
         res.status(201).json(newUser);
-    });
+    });*/
     
     
 });
+userRouter.get('/login/:username/:password', async (req,res,next)=>{
+    const user = await prismaC.blogUser.findUnique({
+        where: {
+            username: req.params.username
+        }
+    });
+    if(user)
+    {
+        const result = await bcrypt.compare(req.params.password, user.password);
+        if(result)
+        {
+            
+            jwt.sign({userId:user.username},SECRET_KEY,{expiresIn:'1h'},(err,token)=>{
+                if(err)
+                {
+                    next(new AppError('Invalid username or password',401));
+                }
+                res.status(200).json({
+                    token:token
+                });
+            });
+        }
+    }
+    else
+    {
+        next(new AppError('Invalid username or password',401));
+    }
+});
 
-userRouter.get('/login/:username/:password', (req,res,next)=>{
+userRouter.get('/login_old/:username/:password', (req,res,next)=>{
     let user = undefined;
     for(let u of arrayUsers)
     {
